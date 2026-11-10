@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'asset_search_screen.dart';
-
+import 'locate_asset_screen.dart';
+import 'qr_scanner_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  const DashboardScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,61 +13,64 @@ class DashboardScreen extends StatelessWidget {
         title: const Text('ITAM Dashboard'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
             const SizedBox(height: 20),
 
-            const Card(
-              child: ListTile(
-                leading: Icon(Icons.inventory),
-                title: Text('Total Assets'),
-                subtitle: Text('Loading...'),
-              ),
-            ),
-
-            const Card(
-              child: ListTile(
-                leading: Icon(Icons.person),
-                title: Text('Assigned Assets'),
-                subtitle: Text('Loading...'),
-              ),
-            ),
-
-            const Card(
-              child: ListTile(
-                leading: Icon(Icons.check_circle),
-                title: Text('Available Assets'),
-                subtitle: Text('Loading...'),
+            const Text(
+              'IT Asset Management',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
             const SizedBox(height: 30),
 
-           ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            const AssetSearchScreen(),
-      ),
-    );
-  },
-  child: const Text('Search Asset'),
-),
-
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Scan QR'),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('Scan Asset'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const QRScannerScreen(),
+                  ),
+                );
+              },
             ),
 
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Locate Asset'),
+            const SizedBox(height: 15),
+
+            ElevatedButton.icon(
+              icon: const Icon(Icons.search),
+              label: const Text('Search Assets'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AssetSearchScreen(),
+                  ),
+                );
+              },
             ),
 
+            const SizedBox(height: 15),
+
+            ElevatedButton.icon(
+              icon: const Icon(Icons.bluetooth_searching),
+              label: const Text('Locate Asset'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LocateAssetScreen(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
