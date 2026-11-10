@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'qr_scanner_screen.dart';
+
+import '../data/mock_assets.dart';
+import 'asset_details_screen.dart';
+
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
 
@@ -10,6 +13,36 @@ class QRScannerScreen extends StatefulWidget {
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
   bool scanned = false;
+
+  void _processQRCode(String code) {
+    if (!assets.containsKey(code)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Asset Not Found: $code'),
+        ),
+      );
+
+      setState(() {
+        scanned = false;
+      });
+
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AssetDetailsScreen(
+          assetTag: code,
+        ),
+      ),
+    ).then((_) {
+      setState(() {
+        scanned = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,29 +55,11 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           if (scanned) return;
 
           final barcode = capture.barcodes.first;
-          final code = barcode.rawValue;
+          final String? code = barcode.rawValue;
 
           if (code != null) {
             scanned = true;
-
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Asset Found'),
-                content: Text('QR Code: $code'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      setState(() {
-                        scanned = false;
-                      });
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-            );
+            _processQRCode(code);
           }
         },
       ),

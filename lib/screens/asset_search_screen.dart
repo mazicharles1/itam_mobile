@@ -1,11 +1,29 @@
 import 'package:flutter/material.dart';
+
+import '../data/mock_assets.dart';
 import 'asset_details_screen.dart';
 
-class AssetSearchScreen extends StatelessWidget {
+class AssetSearchScreen extends StatefulWidget {
   const AssetSearchScreen({super.key});
 
   @override
+  State<AssetSearchScreen> createState() => _AssetSearchScreenState();
+}
+
+class _AssetSearchScreenState extends State<AssetSearchScreen> {
+  String searchText = '';
+
+  @override
   Widget build(BuildContext context) {
+    final filteredAssets = assets.entries.where((asset) {
+      final assetTag = asset.key.toLowerCase();
+      final assetName =
+          (asset.value['name'] ?? '').toLowerCase();
+
+      return assetTag.contains(searchText.toLowerCase()) ||
+          assetName.contains(searchText.toLowerCase());
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Assets'),
@@ -14,46 +32,49 @@ class AssetSearchScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              decoration: const InputDecoration(
                 labelText: 'Search Asset',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),
               ),
+              onChanged: (value) {
+                setState(() {
+                  searchText = value;
+                });
+              },
             ),
 
             const SizedBox(height: 20),
 
             Expanded(
-              child: ListView(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.laptop),
-                    title: const Text('Dell Latitude 7420'),
-                    subtitle: const Text('AST-0032'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const AssetDetailsScreen(),
-                        ),
-                      );
-                    },
-                  ),
+              child: ListView.builder(
+                itemCount: filteredAssets.length,
+                itemBuilder: (context, index) {
+                  final asset = filteredAssets[index];
 
-                  const ListTile(
-                    leading: Icon(Icons.laptop),
-                    title: Text('MacBook Pro'),
-                    subtitle: Text('AST-0015'),
-                  ),
-
-                  const ListTile(
-                    leading: Icon(Icons.desktop_windows),
-                    title: Text('Lenovo ThinkCentre'),
-                    subtitle: Text('AST-0029'),
-                  ),
-                ],
+                  return Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.laptop),
+                      title: Text(
+                        asset.value['name']!,
+                      ),
+                      subtitle: Text(
+                        asset.key,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AssetDetailsScreen(
+                              assetTag: asset.key,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           ],
